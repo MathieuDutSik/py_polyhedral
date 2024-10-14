@@ -1,2 +1,6 @@
-# pypolyhedral
-The Python bindings to polyhedral
+# py_polyhedral
+The Python bindings to *polyhedral_common*.
+
+
+
+
