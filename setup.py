@@ -9,24 +9,18 @@ class BuildCppWithCMake(build_ext):
         repo_url = "https://github.com/MathieuDutSik/polyhedral_common"
         clone_dir = "cpp_code_repo"
 
-        print("BuildCppWithCMake, Step 1")
         if not os.path.exists(clone_dir):
             print(f"Cloning repository from {repo_url}...")
             subprocess.check_call(['git', 'clone', '--recursive', repo_url, clone_dir])
 
-        print("BuildCppWithCMake, Step 2")
         # Step 2: Run CMake to build the C++ project
         build_dir = os.path.join(clone_dir, 'build')
 
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
 
-        print("BuildCppWithCMake, Step 3")
-
         print("Configuring CMake project...")
         subprocess.check_call(['cmake', '..'], cwd=build_dir)
-
-        print("BuildCppWithCMake, Step 4")
 
         print("Building the C++ code...")
         subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir)
@@ -38,8 +32,7 @@ class BuildCppWithCMake(build_ext):
         if not os.path.exists(target_bin_dir):
             os.makedirs(target_bin_dir)
 
-        print("BuildCppWithCMake, Step 5")
-
+        print("Copying the binaries ...")
         for binary in binaries:
             # Assuming the binaries are located in the 'build' directory
             binary_path = os.path.join(build_dir, binary)
@@ -48,16 +41,9 @@ class BuildCppWithCMake(build_ext):
             else:
                 print(f"Warning: {binary} was not found in {build_dir}")
 
-        print("BuildCppWithCMake, Step 6")
-
         # Now, let setuptools do its normal build_ext stuff (optional if you have other extensions)
+        print("Running super.run ...")
         super().run()
-
-# Optionally, if you need to include the extension module built by CMake
-cpp_extension = Extension(
-    'my_cpp_extension',  # Name of the Python extension module
-    sources=[],  # We are building the C++ code separately using CMake
-)
 
 setup(
     name='py_polyhedral',
