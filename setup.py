@@ -11,7 +11,7 @@ class BuildCppWithCMake(build_ext):
 
         if not os.path.exists(clone_dir):
             print(f"Cloning repository from {repo_url}...")
-            subprocess.check_call(['git', 'clone', repo_url, clone_dir])
+            subprocess.check_call(['git', 'clone', '--recursive', repo_url, clone_dir])
 
         # Step 2: Run CMake to build the C++ project
         build_dir = os.path.join(clone_dir, 'build')
