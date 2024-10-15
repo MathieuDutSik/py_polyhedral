@@ -14,10 +14,34 @@ def write_matrix_file(file_name, M):
         f.write("\n")
     f.close()
 
-def read_vector_file(file_name);
+def read_vector_file(file_name):
+    """
+    Read a vector from a file
+    """
+    f = open(file_name, 'r')
+    n = int(f.readline().strip())
+    vector = list(map(int, f.readline().split()))
+    if n != len(vector):
+        raise Exception("The length of the vector is not coherent")
+    f.close()
+    return vector
 
 def read_matrix_file(file_name, matrix):
-
+    """
+    Read a matrix from a file
+    """
+    f = open(file_name, 'r')
+    dims = list(map(int, f.readline().split()))
+    n_row = dims[0]
+    n_col = dims[1]
+    matrix = []
+    for i_row in range(n_row):
+        vector = list(map(int, f.readline().split()))
+        if n_col != len(vector):
+            raise Exception("The length of the vector is not coherent")
+        matrix.add(vector)
+    f.close()
+    return matrix
 
 def compute_isotropic_vector(M):
     """
@@ -33,6 +57,11 @@ def compute_isotropic_vector(M):
     write_matrix_file(input_file, M)
     if not os.path.exists(binary_path):
         raise FileNotFoundError(f"Binary {binary_name} not found in {bin_dir}")
-    result = subprocess.run([binary_path, "rational", input_file, "python", output_file], capture_output=True, text=True)
+    result = subprocess.run([binary_path, "rational", input_file, "Python", output_file], capture_output=True, text=True)
     print("result=", result.stdout)
-    
+    the_vector = read_vector_file(output_file)
+    for val in the_vector:
+        if val != 0:
+            return the_vector
+    # No isotropic vector were found
+    return None
