@@ -3,9 +3,6 @@ import subprocess
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
-
-
-
 class BuildCppWithCMake(build_ext):
     def run(self):
         # Step 1: Clone the GitHub repository containing the C++ code
