@@ -5,6 +5,9 @@ from setuptools.command.build_ext import build_ext
 
 class BuildCppWithCMake(build_ext):
     def run(self):
+        print("Running the standard installation first")
+        build_ext.run(self)
+
         print("Starting of run command of py_polyhedral")
         repo_url = "https://github.com/MathieuDutSik/polyhedral_common"
         clone_dir = "cpp_code_repo"
@@ -26,31 +29,35 @@ class BuildCppWithCMake(build_ext):
         print("Building the C++ code...")
         subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir)
 
+        target_bin_dir = os.path.join(self.build_lib, 'py_polyhedral', 'bin')
+        print("target_bin_dir=", target_bin_dir)
+        if not os.path.exists(target_bin_dir):
+            print("Creating target_bin_dir=", target_bin_dir)
+            os.makedirs(target_bin_dir)
+
         # Step 3: Copy the generated binaries (artifacts) to the Python package directory
         binaries = ["POLY_SerialDualDesc", "CP_TestCopositivity", "CP_TestCompletePositivity", "LORENTZ_FundDomain_AllcockEdgewalk", "POLY_FaceLatticeGen", "INDEF_FORM_AutomorphismGroup", "INDEF_FORM_TestEquivalence", "INDEF_FORM_GetOrbitRepresentative", "INDEF_FORM_GetOrbit_IsotropicKplane", "LATT_canonicalize", "LATT_FindIsotropic"]
-        target_bin_dir = os.path.join('py_polyhedral', 'bin')
-        print("target_bin_dir={}", target_bin_dir)
-
-        if not os.path.exists(target_bin_dir):
-            os.makedirs(target_bin_dir)
 
         print("Copying the binaries ...")
         for binary in binaries:
             # Assuming the binaries are located in the 'build' directory
-            binary_path = os.path.join(build_dir, binary)
+            the_binary = os.path.join(build_dir, binary)
+            print("the_binary=", the_binary)
             if os.path.exists(binary_path):
                 subprocess.check_call(['cp', binary_path, target_bin_dir])
             else:
                 raise MissingBinaryError(f"Error: {binary} was not found in {build_dir}")
 
-        # Now, let setuptools do its normal build_ext stuff (optional if you have other extensions)
-        print("Running super.run ...")
-        super().run()
+cpp_extension = Extension(
+    'my_cpp_extension',
+    sources=[],  # We are building the C++ code separately using CMake
+)
 
 setup(
     name='py_polyhedral',
     version='0.1.1',
     packages=['py_polyhedral'],
+    ext_modules=[cpp_extension],
     cmdclass={
         'build_ext': BuildCppWithCMake,  # Use the custom command to build the C++ code
     },
