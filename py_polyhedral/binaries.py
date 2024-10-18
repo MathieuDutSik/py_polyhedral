@@ -5,8 +5,11 @@ import tempfile
 
 def write_matrix_file(file_name, M):
     n_row = len(M)
-    f = open(file_name, 'w')
     n_col = len(M[0])
+    print("write_matrix_file, n_row=", n_row, " n_col=", n_col)
+    print("write_matrix_file, file_name=", file_name)
+    f = open(file_name, 'w')
+    print("write_matrix_file, f created")
     f.write(str(n_row) + " " + str(n_col) + '\n')
     for i_row in range(n_row):
         for i_col in range(n_col):
@@ -56,6 +59,8 @@ def compute_isotropic_vector(M):
     arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     output_file = arr_output.name
+    print("input_file=", input_file)
+    print("input_file=", input_file)
     write_matrix_file(input_file, M)
     if not os.path.exists(binary_path):
         raise FileNotFoundError(f"Binary {binary_name} not found in {bin_dir}")
