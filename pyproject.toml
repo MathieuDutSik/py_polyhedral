@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my_package"
+version = "0.1.0"
+description = "An encapsulation of the polyhedral_common most useful functionalities"
+authors = [
+    { name = "Mathieu Dutour Sikiric", email = "mathieu.dutour@gmail.com" }
+]
+dependencies = [
+    "subprocess",
+    "tempfile"
+]
