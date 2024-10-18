@@ -55,11 +55,14 @@ cpp_extension = Extension(
 
 setup(
     name='py_polyhedral',
-    version='0.1.1',
+    version='0.1.0',
     packages=['py_polyhedral'],
     ext_modules=[cpp_extension],
     cmdclass={
         'build_ext': BuildCppWithCMake,  # Use the custom command to build the C++ code
+    },
+    package_data={
+        'py_polyhedral': ['bin/*'],  # Ensure binaries are included in the package
     },
     install_requires=[
         # Add any Python dependencies here
