@@ -49,7 +49,7 @@ class BuildCppWithCMake(build_ext):
 
 setup(
     name='py_polyhedral',
-    version='0.1',
+    version='0.1.1',
     packages=['py_polyhedral'],
     cmdclass={
         'build_ext': BuildCppWithCMake,  # Use the custom command to build the C++ code
