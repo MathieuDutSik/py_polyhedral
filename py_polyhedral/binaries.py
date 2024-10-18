@@ -48,22 +48,24 @@ def read_matrix_file(file_name, matrix):
 
 def compute_isotropic_vector(M):
     """
-    Runs a binary from the 'bin' directory of the package.
-    :param binary_name: Name of the binary to run (e.g., 'LATT_FindIsotropic')
-    :return: The output from the binary
+    Computes the isotropic vector by using the LATT_FindIsotropic program
+    :param M the matrix as input
+    :return: The isotropic vector or None is none exists
     """
     # Get the directory of the current file (inside the package)
     bin_dir = os.path.join(os.path.dirname(__file__), 'bin')
-    binary_path = os.path.join(bin_dir, "LATT_isotropy")
+    print("bin_dir=", bin_dir)
+    binary_path = os.path.join(bin_dir, "LATT_FindIsotropic")
+    print("binary_path=", binary_path)
     arr_input = tempfile.NamedTemporaryFile()
     arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     output_file = arr_output.name
     print("input_file=", input_file)
-    print("input_file=", input_file)
+    print("output_file=", output_file)
     write_matrix_file(input_file, M)
     if not os.path.exists(binary_path):
-        raise FileNotFoundError(f"Binary {binary_name} not found in {bin_dir}")
+        raise FileNotFoundError(f"Binary {binary_path} not found in {bin_dir}")
     result = subprocess.run([binary_path, "rational", input_file, "Python", output_file], capture_output=True, text=True)
     print("result=", result.stdout)
     the_vector = read_vector_file(output_file)
