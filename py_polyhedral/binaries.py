@@ -52,8 +52,10 @@ def compute_isotropic_vector(M):
     # Get the directory of the current file (inside the package)
     bin_dir = os.path.join(os.path.dirname(__file__), 'bin')
     binary_path = os.path.join(bin_dir, "LATT_isotropy")
-    input_file = tempfile.NamedTemporaryFile(delete=False)
-    output_file = tempfile.NamedTemporaryFile(delete=False)
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
     write_matrix_file(input_file, M)
     if not os.path.exists(binary_path):
         raise FileNotFoundError(f"Binary {binary_name} not found in {bin_dir}")
