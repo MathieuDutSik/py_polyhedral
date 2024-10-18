@@ -5,7 +5,7 @@ from setuptools.command.build_ext import build_ext
 
 class BuildCppWithCMake(build_ext):
     def run(self):
-        # Step 1: Clone the GitHub repository containing the C++ code
+        print("Starting of run command of py_polyhedral")
         repo_url = "https://github.com/MathieuDutSik/polyhedral_common"
         clone_dir = "cpp_code_repo"
 
@@ -15,6 +15,7 @@ class BuildCppWithCMake(build_ext):
 
         # Step 2: Run CMake to build the C++ project
         build_dir = os.path.join(clone_dir, 'build')
+        print("build_dir=", build_dir)
 
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
@@ -27,7 +28,8 @@ class BuildCppWithCMake(build_ext):
 
         # Step 3: Copy the generated binaries (artifacts) to the Python package directory
         binaries = ["POLY_SerialDualDesc", "CP_TestCopositivity", "CP_TestCompletePositivity", "LORENTZ_FundDomain_AllcockEdgewalk", "POLY_FaceLatticeGen", "INDEF_FORM_AutomorphismGroup", "INDEF_FORM_TestEquivalence", "INDEF_FORM_GetOrbitRepresentative", "INDEF_FORM_GetOrbit_IsotropicKplane", "LATT_canonicalize", "LATT_FindIsotropic"]
-        target_bin_dir = os.path.join('my_package', 'bin')
+        target_bin_dir = os.path.join('py_polyhedral', 'bin')
+        print("target_bin_dir={}", target_bin_dir)
 
         if not os.path.exists(target_bin_dir):
             os.makedirs(target_bin_dir)
@@ -39,7 +41,7 @@ class BuildCppWithCMake(build_ext):
             if os.path.exists(binary_path):
                 subprocess.check_call(['cp', binary_path, target_bin_dir])
             else:
-                print(f"Warning: {binary} was not found in {build_dir}")
+                raise MissingBinaryError(f"Error: {binary} was not found in {build_dir}")
 
         # Now, let setuptools do its normal build_ext stuff (optional if you have other extensions)
         print("Running super.run ...")
