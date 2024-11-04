@@ -9,7 +9,4 @@ description = "An encapsulation of the polyhedral_common most useful functionali
 authors = [
     { name = "Mathieu Dutour Sikiric", email = "mathieu.dutour@gmail.com" }
 ]
-dependencies = [
-    "subprocess",
-    "tempfile"
-]
+dependencies = []
