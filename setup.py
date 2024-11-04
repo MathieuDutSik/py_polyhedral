@@ -64,7 +64,6 @@ setup(
     package_data={
         'py_polyhedral': ['bin/*'],  # Ensure binaries are included in the package
     },
-    install_requires=[
-        # Add any Python dependencies here
-    ],
+    # Add any Python dependencies here
+    install_requires=['subprocess'],
 )
