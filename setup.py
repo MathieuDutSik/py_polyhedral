@@ -1,4 +1,5 @@
 import os
+import subprocess
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
@@ -13,7 +14,7 @@ class BuildCppWithCMake(build_ext):
 
         if not os.path.exists(clone_dir):
             print(f"Cloning repository from {repo_url}...")
-            os.system(f"git clone --recursive {repo_url} {clone_dir}")
+            subprocess.check_call(['git', 'clone', '--recursive', repo_url, clone_dir])
 
         # Step 2: Run CMake to build the C++ project
         build_dir = os.path.join(clone_dir, 'build')
@@ -23,10 +24,10 @@ class BuildCppWithCMake(build_ext):
             os.makedirs(build_dir)
 
         print("Configuring CMake project...")
-        os.system(f"(cd {build_dir} && cmake ..)")
+        subprocess.check_call(['cmake', '..'], cwd=build_dir)
 
         print("Building the C++ code...")
-        os.system(f"(cd {build_dir} && cmake --build .)")
+        subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir)
 
         target_bin_dir = os.path.join(self.build_lib, 'py_polyhedral', 'bin')
         print("target_bin_dir=", target_bin_dir)
@@ -43,7 +44,7 @@ class BuildCppWithCMake(build_ext):
             the_binary = os.path.join(build_dir, binary)
             print("the_binary=", the_binary)
             if os.path.is_file(the_binary):
-                os.system(f"cp {the_binary} {target_bin_dir}")
+                subprocess.check_call(['cp', the_binary, target_bin_dir])
             else:
                 raise FileNotFoundError(f"Error: {binary} was not found in {build_dir}")
 
