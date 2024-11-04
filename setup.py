@@ -5,8 +5,8 @@ from setuptools.command.build_ext import build_ext
 
 class BuildCppWithCMake(build_ext):
     def run(self):
-        print("Running the standard installation first")
-        build_ext.run(self)
+#        print("Running the standard installation first")
+#        build_ext.run(self)
 
         print("Starting of run command of py_polyhedral")
         repo_url = "https://github.com/MathieuDutSik/polyhedral_common"
