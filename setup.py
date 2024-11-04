@@ -43,10 +43,10 @@ class BuildCppWithCMake(build_ext):
             # Assuming the binaries are located in the 'build' directory
             the_binary = os.path.join(build_dir, binary)
             print("the_binary=", the_binary)
-            if os.path.exists(binary_path):
-                subprocess.check_call(['cp', binary_path, target_bin_dir])
+            if os.path.is_file(the_binary):
+                subprocess.check_call(['cp', the_binary, target_bin_dir])
             else:
-                raise MissingBinaryError(f"Error: {binary} was not found in {build_dir}")
+                raise FileNotFoundError(f"Error: {binary} was not found in {build_dir}")
 
 cpp_extension = Extension(
     'my_cpp_extension',
