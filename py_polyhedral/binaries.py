@@ -1,7 +1,18 @@
 import os
+import ast
 import subprocess
 import tempfile
 
+def get_binary_path(the_bin):
+    """
+    Gets the binary to use for the computation
+    """
+    # Get the directory of the current file (inside the package)
+    bin_dir = os.path.join(os.path.dirname(__file__), 'bin')
+    binary_path = os.path.join(bin_dir, the_bin)
+    if not os.path.exists(binary_path):
+        raise FileNotFoundError(f"Binary {binary_path} not found in {bin_dir}")
+    return binary_path
 
 def write_matrix_file(file_name, M):
     n_row = len(M)
@@ -17,60 +28,162 @@ def write_matrix_file(file_name, M):
         f.write("\n")
     f.close()
 
-def read_vector_file(file_name):
-    """
-    Read a vector from a file
-    """
-    f = open(file_name, 'r')
-    n = int(f.readline().strip())
-    vector = list(map(int, f.readline().split()))
-    if n != len(vector):
-        raise Exception("The length of the vector is not coherent")
+def write_group_file(file_name, l_gen, n_act):
+    n_gen = len(l_gen)
+    f = open(file_name, 'w')
+    print("write_matrix_file, f created")
+    f.write(str(n_act) + " " + str(n_gen) + '\n')
+    for e_gen in l_gen:
+        for i_act in range(n_act):
+            f.write(" " + str(e_gen[i_col]))
+        f.write("\n")
     f.close()
-    return vector
 
-def read_matrix_file(file_name, matrix):
+def ast_read(file_name):
     """
-    Read a matrix from a file
+    Read a Python object from a text file
     """
     f = open(file_name, 'r')
-    dims = list(map(int, f.readline().split()))
-    n_row = dims[0]
-    n_col = dims[1]
-    matrix = []
-    for i_row in range(n_row):
-        vector = list(map(int, f.readline().split()))
-        if n_col != len(vector):
-            raise Exception("The length of the vector is not coherent")
-        matrix.add(vector)
+    content = f.read()
     f.close()
-    return matrix
+    return ast.literal_eval(content)
 
 def compute_isotropic_vector(M):
     """
-    Computes the isotropic vector by using the LATT_FindIsotropic program
+    Computes the isotropic vector of a matrix
     :param M the matrix as input
     :return: The isotropic vector or None is none exists
     """
-    # Get the directory of the current file (inside the package)
-    bin_dir = os.path.join(os.path.dirname(__file__), 'bin')
-    print("bin_dir=", bin_dir)
-    binary_path = os.path.join(bin_dir, "LATT_FindIsotropic")
-    print("binary_path=", binary_path)
+    binary_path = get_binary_path("LATT_FindIsotropic")
     arr_input = tempfile.NamedTemporaryFile()
     arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
     output_file = arr_output.name
-    print("input_file=", input_file)
-    print("output_file=", output_file)
     write_matrix_file(input_file, M)
-    if not os.path.exists(binary_path):
-        raise FileNotFoundError(f"Binary {binary_path} not found in {bin_dir}")
-    result = subprocess.run([binary_path, "rational", input_file, "Python", output_file], capture_output=True, text=True)
-    print("result=", result.stdout)
-    the_vector = read_vector_file(output_file)
-    for val in the_vector:
-        if val != 0:
-            return the_vector
-    # No isotropic vector were found
-    return None
+    result = subprocess.run([binary_path, "rational", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def compute_canonical_form(M):
+    """
+    Computes the canonical form of positive definite matrix
+    :param M the matrix as input
+    :return: The dictionary containing, the vector configuration, the reduced matrix and the unimodular transformation
+    """
+    binary_path = get_binary_path("LATT_Canonicalize")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def test_copositivity(M):
+    """
+    Tests whether the matrix is copositive
+    :param M the matrix as input
+    :return: The dictionary containing the answer and if not copositive the certificate for it.
+    """
+    binary_path = get_binary_path("CP_TestCopositivity")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def test_complete_positivity(M):
+    """
+    Tests whether the matrix is completely positive
+    :param M the matrix as input
+    :return: The dictionary containing, the answer and the certificate
+    """
+    binary_path = get_binary_path("CP_TestCompletePositivity")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def compute_indefinite_form_automorphism_group(M):
+    """
+    Computes the automorphism group of an indefinite form
+    :param M the matrix as input
+    :return: The list of generators
+    """
+    binary_path = get_binary_path("INDEF_FORM_AutomorphismGroup")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def compute_indefinite_form_test_equivalence(M1, M2):
+    """
+    Computes the equivalence of indefinite forms
+    :param M1 the indefinite form as input
+    :param M2 the indefinite form as input
+    :return: The equivalence if one exists and None otherwise
+    """
+    binary_path = get_binary_path("INDEF_FORM_TestEquivalence")
+    arr_input1 = tempfile.NamedTemporaryFile()
+    arr_input2 = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input1_file = arr_input1.name
+    input2_file = arr_input2.name
+    output_file = arr_output.name
+    write_matrix_file(input1_file, M1)
+    write_matrix_file(input2_file, M2)
+    result = subprocess.run([binary_path, "gmp", input1_file, input2_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def compute_indefinite_form_get_orbit_representative(M, eNorm):
+    """
+    Computes the orbits of representatives of vectors of the given norm
+    :param M the matrix as input
+    :return: The list of generators
+    """
+    binary_path = get_binary_path("INDEF_FORM_AutomorphismGroup")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, str(eNorm), "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def compute_indefinite_form_isotropic_k_stuff(M, k, nature):
+    """
+    Computes the orbits of isotropic k-plane or k-flag
+    :param M the matrix as input
+    :return: The list of generators
+    """
+    binary_path = get_binary_path("INDEF_FORM_AutomorphismGroup")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, str(k), nature, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def compute_indefinite_form_isotropic_k_plane(M, k):
+    """
+    Computes the orbits of isotropic k-plane
+    :param M the matrix as input
+    :return: The list of generators
+    """
+    return compute_indefinite_form_isotropic_k_stuff(M, k, "plane")
+
+def compute_indefinite_form_isotropic_k_flag(M, k):
+    """
+    Computes the orbits of isotropic k-flag
+    :param M the matrix as input
+    :return: The list of generators
+    """
+    return compute_indefinite_form_isotropic_k_stuff(M, k, "flag")
