@@ -108,7 +108,7 @@ def test_complete_positivity(M):
     result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
-def compute_indefinite_form_automorphism_group(M):
+def indefinite_form_automorphism_group(M):
     """
     Computes the automorphism group of an indefinite form
     :param M the matrix as input
@@ -123,7 +123,7 @@ def compute_indefinite_form_automorphism_group(M):
     result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
-def compute_indefinite_form_test_equivalence(M1, M2):
+def indefinite_form_test_equivalence(M1, M2):
     """
     Computes the equivalence of indefinite forms
     :param M1 the indefinite form as input
@@ -142,7 +142,7 @@ def compute_indefinite_form_test_equivalence(M1, M2):
     result = subprocess.run([binary_path, "gmp", input1_file, input2_file, "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
-def compute_indefinite_form_get_orbit_representative(M, eNorm):
+def indefinite_form_get_orbit_representative(M, eNorm):
     """
     Computes the orbits of representatives of vectors of the given norm
     :param M the matrix as input
@@ -157,7 +157,7 @@ def compute_indefinite_form_get_orbit_representative(M, eNorm):
     result = subprocess.run([binary_path, "gmp", input_file, str(eNorm), "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
-def compute_indefinite_form_isotropic_k_stuff(M, k, nature):
+def indefinite_form_isotropic_k_stuff(M, k, nature):
     """
     Computes the orbits of isotropic k-plane or k-flag
     :param M the matrix as input
@@ -172,18 +172,73 @@ def compute_indefinite_form_isotropic_k_stuff(M, k, nature):
     result = subprocess.run([binary_path, "gmp", input_file, str(k), nature, "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
-def compute_indefinite_form_isotropic_k_plane(M, k):
+def indefinite_form_isotropic_k_plane(M, k):
     """
     Computes the orbits of isotropic k-plane
     :param M the matrix as input
     :return: The list of generators
     """
-    return compute_indefinite_form_isotropic_k_stuff(M, k, "plane")
+    return indefinite_form_isotropic_k_stuff(M, k, "plane")
 
-def compute_indefinite_form_isotropic_k_flag(M, k):
+def indefinite_form_isotropic_k_flag(M, k):
     """
     Computes the orbits of isotropic k-flag
     :param M the matrix as input
     :return: The list of generators
     """
-    return compute_indefinite_form_isotropic_k_stuff(M, k, "flag")
+    return indefinite_form_isotropic_k_stuff(M, k, "flag")
+
+def dual_description(EXT, GRP):
+    """
+    Computes the orbits of facets of the polytope
+    :param EXT the matrix as input
+    :param GRP the permutation group being used.
+    :return The list of orbit representatives
+    """
+    binary_path = get_binary_path("POLY_DualDescription")
+    arr_inpEXT = tempfile.NamedTemporaryFile()
+    arr_inpGRP = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    inpEXT_file = arr_inpEXT.name
+    inpGRP_file = arr_inpGRP.name
+    output_file = arr_output.name
+    write_matrix_file(inpEXT_file, M1)
+    write_group_file(inpGRP_file, M2)
+    result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def lorentzian_reflective_edgewalk(M):
+    """
+    Computes the fundamental domain if the lattice is reflective. If not then reports it.
+    :param M the lorentzian matrix
+    :return: A dictionary with the relevant information
+    """
+    binary_path = get_binary_path("LORENTZ_ReflectiveEdgewalk")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def polytope_face_lattice(EXT, GRP, LevSearch):
+    """
+    Computes the faces up to some level by linear programming
+    :param EXT the matrix as input
+    :param GRP the permutation group being used.
+    :param The maximum dimension of orbits
+    :return The list of orbit representatives
+    """
+    binary_path = get_binary_path("POLY_DirectFaceLattice")
+    arr_inpEXT = tempfile.NamedTemporaryFile()
+    arr_inpGRP = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    inpEXT_file = arr_inpEXT.name
+    inpGRP_file = arr_inpGRP.name
+    output_file = arr_output.name
+    write_matrix_file(inpEXT_file, M1)
+    write_group_file(inpGRP_file, M2)
+    result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch), "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
