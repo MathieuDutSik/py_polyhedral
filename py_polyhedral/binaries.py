@@ -45,7 +45,7 @@ def write_group_file(file_name, l_gen, n_act):
     f.write(str(n_act) + " " + str(n_gen) + '\n')
     for e_gen in l_gen:
         for i_act in range(n_act):
-            f.write(" " + str(e_gen[i_col]))
+            f.write(" " + str(e_gen[i_act]))
         f.write("\n")
     f.close()
 
@@ -54,7 +54,7 @@ def ast_read(file_name):
     Read a Python object from a text file
     """
     if not os.path.exists(file_name):
-	raise FileNotFoundError(f"Output file {file_name} does not exist")
+        raise FileNotFoundError(f"Output file {file_name} does not exist")
     f = open(file_name, 'r')
     content = f.read()
     f.close()
@@ -207,7 +207,7 @@ def dual_description(EXT, GRP):
     :param GRP the permutation group being used.
     :return The list of orbit representatives
     """
-    binary_path = get_binary_path("POLY_DualDescription")
+    binary_path = get_binary_path("POLY_DirectSerialDualDesc")
     arr_inpEXT = tempfile.NamedTemporaryFile()
     arr_inpGRP = tempfile.NamedTemporaryFile()
     arr_output = tempfile.NamedTemporaryFile()
@@ -215,7 +215,7 @@ def dual_description(EXT, GRP):
     inpGRP_file = arr_inpGRP.name
     output_file = arr_output.name
     write_matrix_file(inpEXT_file, EXT)
-    write_group_file(inpGRP_file, GRP)
+    write_group_file(inpGRP_file, GRP, len(EXT))
     result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
