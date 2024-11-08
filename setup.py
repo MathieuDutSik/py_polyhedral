@@ -33,7 +33,7 @@ class BuildCppWithCMake(build_ext):
             os.makedirs(target_bin_dir)
 
         # Step 3: Copy the generated binaries (artifacts) to the Python package directory
-        binaries = ["POLY_SerialDualDesc", "CP_TestCopositivity", "CP_TestCompletePositivity", "LORENTZ_FundDomain_AllcockEdgewalk", "POLY_FaceLatticeGen", "INDEF_FORM_AutomorphismGroup", "INDEF_FORM_TestEquivalence", "INDEF_FORM_GetOrbitRepresentative", "INDEF_FORM_GetOrbit_IsotropicKplane", "LATT_canonicalize", "LATT_FindIsotropic"]
+        binaries = ["POLY_DirectSerialDualDesc", "CP_TestCopositivity", "CP_TestCompletePositivity", "LORENTZ_ReflectiveEdgewalk", "POLY_DirectFaceLattice", "INDEF_FORM_AutomorphismGroup", "INDEF_FORM_TestEquivalence", "INDEF_FORM_GetOrbitRepresentative", "INDEF_FORM_GetOrbit_IsotropicKplane", "LATT_canonicalize", "LATT_FindIsotropic", "LATT_SerialComputeDelaunay", "LATT_SerialLattice_IsoDelaunayDomain"]
 
         print("Copying the binaries ...")
         for binary in binaries:
