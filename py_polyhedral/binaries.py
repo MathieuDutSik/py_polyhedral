@@ -17,10 +17,7 @@ def get_binary_path(the_bin):
 def write_matrix_file(file_name, M):
     n_row = len(M)
     n_col = len(M[0])
-    print("write_matrix_file, n_row=", n_row, " n_col=", n_col)
-    print("write_matrix_file, file_name=", file_name)
     f = open(file_name, 'w')
-    print("write_matrix_file, f created")
     f.write(str(n_row) + " " + str(n_col) + '\n')
     for i_row in range(n_row):
         for i_col in range(n_col):
@@ -28,10 +25,23 @@ def write_matrix_file(file_name, M):
         f.write("\n")
     f.close()
 
+def write_list_matrix_file(file_name, ListMM):
+    n_mat = len(ListM)
+    n_row = len(ListM[0])
+    n_col = len(ListM[0][0])
+    f = open(file_name, 'w')
+    f.write(str(n_mat) + '\n')
+    for i_mat in range(n_mat):
+        f.write(str(n_row) + " " + str(n_col) + '\n')
+        for i_row in range(n_row):
+            for i_col in range(n_col):
+                f.write(" " + str(ListM[i_mat][i_row][i_col]))
+            f.write("\n")
+    f.close()
+
 def write_group_file(file_name, l_gen, n_act):
     n_gen = len(l_gen)
     f = open(file_name, 'w')
-    print("write_matrix_file, f created")
     f.write(str(n_act) + " " + str(n_gen) + '\n')
     for e_gen in l_gen:
         for i_act in range(n_act):
@@ -240,5 +250,35 @@ def polytope_face_lattice(EXT, GRP, LevSearch):
     write_matrix_file(inpEXT_file, M1)
     write_group_file(inpGRP_file, M2)
     result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch), "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def lattice_compute_delaunay(M):
+    """
+    Computes the orbits of lattice Delaunay polytopes of the lattice.
+    :param M the lorentzian matrix
+    :return: A dictionary with the relevant information
+    """
+    binary_path = get_binary_path("LATT_SerialComputeDelaunay")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_matrix_file(input_file, M)
+    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    return ast_read(output_file)
+
+def lattice_iso_delaunay_domains(ListM):
+    """
+    Computes the orbits of iso Delaunay domains
+    :param ListM the space of matrices
+    :return: A dictionary with the relevant information
+    """
+    binary_path = get_binary_path("LATT_SerialLattice_IsoDelaunayDomain")
+    arr_input = tempfile.NamedTemporaryFile()
+    arr_output = tempfile.NamedTemporaryFile()
+    input_file = arr_input.name
+    output_file = arr_output.name
+    write_list_matrix_file(input_file, ListM)
+    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
