@@ -78,14 +78,14 @@ M2 = [[0,2,0,0],[2,0,0,0],[0,0,0,1],[0,0,1,0]]
 py_polyhedral.indefinite_form_test_equivalence(M1, M2)
 ```
 
-Compute orbit representative of vectors is done in the following way: (To DEBUG)
+Compute orbit representative of vectors is done in the following way:
 ```python
 import py_polyhedral
 M = [[0,1,0,0],[1,0,0,0],[0,0,0,2],[0,0,2,0]]
 py_polyhedral.indefinite_form_get_orbit_representative(M, 4)
 ```
 
-The computation of isotropic planes can be done in the following way: (To DEBUG)
+The computation of isotropic planes can be done in the following way:
 ```python
 import py_polyhedral
 M = [[0,1,0,0],[1,0,0,0],[0,0,0,2],[0,0,2,0]]

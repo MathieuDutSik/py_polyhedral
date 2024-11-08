@@ -160,7 +160,7 @@ def indefinite_form_get_orbit_representative(M, eNorm):
     :param M the matrix as input
     :return: The list of generators
     """
-    binary_path = get_binary_path("INDEF_FORM_AutomorphismGroup")
+    binary_path = get_binary_path("INDEF_FORM_GetOrbitRepresentative")
     arr_input = tempfile.NamedTemporaryFile()
     arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
@@ -175,7 +175,7 @@ def indefinite_form_isotropic_k_stuff(M, k, nature):
     :param M the matrix as input
     :return: The list of generators
     """
-    binary_path = get_binary_path("INDEF_FORM_AutomorphismGroup")
+    binary_path = get_binary_path("INDEF_FORM_GetOrbit_IsotropicKplane")
     arr_input = tempfile.NamedTemporaryFile()
     arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
