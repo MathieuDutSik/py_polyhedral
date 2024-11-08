@@ -57,7 +57,7 @@ py_polyhedral.test_copositivity(M_horn)
 Test complete positivity is done in the following way:
 ```python
 import py_polyhedral
-M_berman = [ [ 2, 1, 0, 0, 1 ], [ 1, 2, 1, 0, 0 ], [ 0, 1, 2, 1, 0 ], [ 0, 0, 1, 2, 1 ], [ 1, 0, 0, 1, 2 ]
+M_berman = [ [ 2, 1, 0, 0, 1 ], [ 1, 2, 1, 0, 0 ], [ 0, 1, 2, 1, 0 ], [ 0, 0, 1, 2, 1 ], [ 1, 0, 0, 1, 2 ] ]
 py_polyhedral.test_complete_positivity(M_berman)
 ```
 
@@ -78,21 +78,21 @@ M2 = [[0,2,0,0],[2,0,0,0],[0,0,0,1],[0,0,1,0]]
 py_polyhedral.indefinite_form_test_equivalence(M1, M2)
 ```
 
-Compute orbit representative of vectors is done in the following way:
+Compute orbit representative of vectors is done in the following way: (PB)
 ```python
 import py_polyhedral
 M = [[0,1,0,0],[1,0,0,0],[0,0,0,2],[0,0,2,0]]
 py_polyhedral.indefinite_form_get_orbit_representative(M, 4)
 ```
 
-The computation of isotropic planes can be done in the following way:
+The computation of isotropic planes can be done in the following way: (PB)
 ```python
 import py_polyhedral
 M = [[0,1,0,0],[1,0,0,0],[0,0,0,2],[0,0,2,0]]
 py_polyhedral.indefinite_form_isotropic_k_plane(M, 2)
 ```
 
-### Canonical form computation
+### Canonical form
 
 The computation of canonical form of positive definite quadratic forms is done in the following way:
 ```python

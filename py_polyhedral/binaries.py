@@ -53,6 +53,8 @@ def ast_read(file_name):
     """
     Read a Python object from a text file
     """
+    if not os.path.exists(file_name):
+	raise FileNotFoundError(f"Output file {file_name} does not exist")
     f = open(file_name, 'r')
     content = f.read()
     f.close()
@@ -212,8 +214,8 @@ def dual_description(EXT, GRP):
     inpEXT_file = arr_inpEXT.name
     inpGRP_file = arr_inpGRP.name
     output_file = arr_output.name
-    write_matrix_file(inpEXT_file, M1)
-    write_group_file(inpGRP_file, M2)
+    write_matrix_file(inpEXT_file, EXT)
+    write_group_file(inpGRP_file, GRP)
     result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
@@ -247,8 +249,8 @@ def polytope_face_lattice(EXT, GRP, LevSearch):
     inpEXT_file = arr_inpEXT.name
     inpGRP_file = arr_inpGRP.name
     output_file = arr_output.name
-    write_matrix_file(inpEXT_file, M1)
-    write_group_file(inpGRP_file, M2)
+    write_matrix_file(inpEXT_file, EXT)
+    write_group_file(inpGRP_file, GRP)
     result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch), "PYTHON", output_file], capture_output=True, text=True)
     return ast_read(output_file)
 
