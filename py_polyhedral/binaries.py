@@ -60,6 +60,17 @@ def ast_read(file_name):
     f.close()
     return ast.literal_eval(content)
 
+def run_and_check(list_comm):
+    """
+    Run a command and process what is happening. Stop if an error is detected
+    """
+    result = subprocess.run(list_comm, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("result=", result)
+        print("returncode=", result.returncode)
+        print("list_comm=", list_comm)
+        raise RuntimeError("The running of the program went wrongly")
+
 def compute_isotropic_vector(M):
     """
     Computes the isotropic vector of a matrix
@@ -72,7 +83,7 @@ def compute_isotropic_vector(M):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "rational", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "rational", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def compute_canonical_form(M):
@@ -87,7 +98,7 @@ def compute_canonical_form(M):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def test_copositivity(M):
@@ -102,7 +113,7 @@ def test_copositivity(M):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def test_complete_positivity(M):
@@ -117,7 +128,7 @@ def test_complete_positivity(M):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def indefinite_form_automorphism_group(M):
@@ -132,7 +143,7 @@ def indefinite_form_automorphism_group(M):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def indefinite_form_test_equivalence(M1, M2):
@@ -151,7 +162,7 @@ def indefinite_form_test_equivalence(M1, M2):
     output_file = arr_output.name
     write_matrix_file(input1_file, M1)
     write_matrix_file(input2_file, M2)
-    result = subprocess.run([binary_path, "gmp", input1_file, input2_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input1_file, input2_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def indefinite_form_get_orbit_representative(M, eNorm):
@@ -166,7 +177,7 @@ def indefinite_form_get_orbit_representative(M, eNorm):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, str(eNorm), "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, str(eNorm), "PYTHON", output_file])
     return ast_read(output_file)
 
 def indefinite_form_isotropic_k_stuff(M, k, nature):
@@ -181,7 +192,7 @@ def indefinite_form_isotropic_k_stuff(M, k, nature):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, str(k), nature, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, str(k), nature, "PYTHON", output_file])
     return ast_read(output_file)
 
 def indefinite_form_isotropic_k_plane(M, k):
@@ -216,7 +227,7 @@ def dual_description(EXT, GRP):
     output_file = arr_output.name
     write_matrix_file(inpEXT_file, EXT)
     write_group_file(inpGRP_file, GRP, len(EXT))
-    result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def lorentzian_reflective_edgewalk(M):
@@ -231,7 +242,7 @@ def lorentzian_reflective_edgewalk(M):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def polytope_face_lattice(EXT, GRP, LevSearch):
@@ -251,7 +262,7 @@ def polytope_face_lattice(EXT, GRP, LevSearch):
     output_file = arr_output.name
     write_matrix_file(inpEXT_file, EXT)
     write_group_file(inpGRP_file, GRP)
-    result = subprocess.run([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch), "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch), "PYTHON", output_file])
     return ast_read(output_file)
 
 def lattice_compute_delaunay(M):
@@ -266,7 +277,7 @@ def lattice_compute_delaunay(M):
     input_file = arr_input.name
     output_file = arr_output.name
     write_matrix_file(input_file, M)
-    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
 def lattice_iso_delaunay_domains(ListM):
@@ -281,6 +292,6 @@ def lattice_iso_delaunay_domains(ListM):
     input_file = arr_input.name
     output_file = arr_output.name
     write_list_matrix_file(input_file, ListM)
-    result = subprocess.run([binary_path, "gmp", input_file, "PYTHON", output_file], capture_output=True, text=True)
+    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
     return ast_read(output_file)
 
