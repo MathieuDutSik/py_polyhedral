@@ -64,12 +64,18 @@ def run_and_check(list_comm):
     """
     Run a command and process what is happening. Stop if an error is detected
     """
-    result = subprocess.run(list_comm, capture_output=True, text=True)
+    arr_output = tempfile.NamedTemporaryFile()
+    output_file = arr_output.name
+    list_comm_call = list_comm
+    list_comm_call.append("PYTHON")
+    list_comm_call.append(output_file)
+    result = subprocess.run(list_comm_call, capture_output=True, text=True)
     if result.returncode != 0:
         print("result=", result)
         print("returncode=", result.returncode)
         print("list_comm=", list_comm)
         raise RuntimeError("The running of the program went wrongly")
+    return ast_read(output_file)
 
 def compute_isotropic_vector(M):
     """
@@ -79,12 +85,9 @@ def compute_isotropic_vector(M):
     """
     binary_path = get_binary_path("LATT_FindIsotropic")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "rational", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "rational", input_file])
 
 def compute_canonical_form(M):
     """
@@ -94,12 +97,9 @@ def compute_canonical_form(M):
     """
     binary_path = get_binary_path("LATT_Canonicalize")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file])
 
 def test_copositivity(M):
     """
@@ -109,12 +109,9 @@ def test_copositivity(M):
     """
     binary_path = get_binary_path("CP_TestCopositivity")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file])
 
 def test_complete_positivity(M):
     """
@@ -124,12 +121,9 @@ def test_complete_positivity(M):
     """
     binary_path = get_binary_path("CP_TestCompletePositivity")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file])
 
 def indefinite_form_automorphism_group(M):
     """
@@ -139,12 +133,9 @@ def indefinite_form_automorphism_group(M):
     """
     binary_path = get_binary_path("INDEF_FORM_AutomorphismGroup")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file])
 
 def indefinite_form_test_equivalence(M1, M2):
     """
@@ -156,14 +147,11 @@ def indefinite_form_test_equivalence(M1, M2):
     binary_path = get_binary_path("INDEF_FORM_TestEquivalence")
     arr_input1 = tempfile.NamedTemporaryFile()
     arr_input2 = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input1_file = arr_input1.name
     input2_file = arr_input2.name
-    output_file = arr_output.name
     write_matrix_file(input1_file, M1)
     write_matrix_file(input2_file, M2)
-    run_and_check([binary_path, "gmp", input1_file, input2_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input1_file, input2_file])
 
 def indefinite_form_get_orbit_representative(M, eNorm):
     """
@@ -173,12 +161,9 @@ def indefinite_form_get_orbit_representative(M, eNorm):
     """
     binary_path = get_binary_path("INDEF_FORM_GetOrbitRepresentative")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, str(eNorm), "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file, str(eNorm)])
 
 def indefinite_form_isotropic_k_stuff(M, k, nature):
     """
@@ -188,12 +173,9 @@ def indefinite_form_isotropic_k_stuff(M, k, nature):
     """
     binary_path = get_binary_path("INDEF_FORM_GetOrbit_IsotropicKplane")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, str(k), nature, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file, str(k), nature])
 
 def indefinite_form_isotropic_k_plane(M, k):
     """
@@ -221,14 +203,11 @@ def dual_description(EXT, GRP):
     binary_path = get_binary_path("POLY_DirectSerialDualDesc")
     arr_inpEXT = tempfile.NamedTemporaryFile()
     arr_inpGRP = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     inpEXT_file = arr_inpEXT.name
     inpGRP_file = arr_inpGRP.name
-    output_file = arr_output.name
     write_matrix_file(inpEXT_file, EXT)
     write_group_file(inpGRP_file, GRP, len(EXT))
-    run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file])
 
 def lorentzian_reflective_edgewalk(M):
     """
@@ -238,12 +217,9 @@ def lorentzian_reflective_edgewalk(M):
     """
     binary_path = get_binary_path("LORENTZ_ReflectiveEdgewalk")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file])
 
 def polytope_face_lattice(EXT, GRP, LevSearch):
     """
@@ -256,14 +232,11 @@ def polytope_face_lattice(EXT, GRP, LevSearch):
     binary_path = get_binary_path("POLY_DirectFaceLattice")
     arr_inpEXT = tempfile.NamedTemporaryFile()
     arr_inpGRP = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     inpEXT_file = arr_inpEXT.name
     inpGRP_file = arr_inpGRP.name
-    output_file = arr_output.name
     write_matrix_file(inpEXT_file, EXT)
     write_group_file(inpGRP_file, GRP)
-    run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch), "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "rational", inpEXT_file, inpGRP_file, str(LevSearch)])
 
 def lattice_compute_delaunay(M):
     """
@@ -273,12 +246,9 @@ def lattice_compute_delaunay(M):
     """
     binary_path = get_binary_path("LATT_SerialComputeDelaunay")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_matrix_file(input_file, M)
-    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file])
 
 def lattice_iso_delaunay_domains(ListM):
     """
@@ -288,10 +258,7 @@ def lattice_iso_delaunay_domains(ListM):
     """
     binary_path = get_binary_path("LATT_SerialLattice_IsoDelaunayDomain")
     arr_input = tempfile.NamedTemporaryFile()
-    arr_output = tempfile.NamedTemporaryFile()
     input_file = arr_input.name
-    output_file = arr_output.name
     write_list_matrix_file(input_file, ListM)
-    run_and_check([binary_path, "gmp", input_file, "PYTHON", output_file])
-    return ast_read(output_file)
+    return run_and_check([binary_path, "gmp", input_file])
 
